@@ -53,7 +53,7 @@ module Lowdown
     #
     # @return (see Client#initialize)
     #
-    def self.production(production, certificate:, pool_size: 1, keep_alive: false, connection_class: Connection)
+    def self.production(production, certificate:, pool_size: 1, keep_alive: false, connection_class: Connection, proxy: nil)
       certificate = Certificate.certificate(certificate)
       if production
         unless certificate.production?
@@ -68,7 +68,8 @@ module Lowdown
              certificate: certificate,
              pool_size: pool_size,
              keep_alive: keep_alive,
-             connection_class: connection_class)
+             connection_class: connection_class,
+             proxy: nil)
     end
 
     # Creates a connection pool that connects to the specified `uri`.
@@ -91,10 +92,10 @@ module Lowdown
     #
     # @return (see Client#initialize)
     #
-    def self.client(uri:, certificate:, pool_size: 1, keep_alive: false, connection_class: Connection)
+    def self.client(uri:, certificate:, pool_size: 1, keep_alive: false, connection_class: Connection, proxy: nil)
       certificate = Certificate.certificate(certificate)
       connection_class ||= Connection
-      connection_pool = connection_class.pool(size: pool_size, args: [uri, certificate.ssl_context, keep_alive])
+      connection_pool = connection_class.pool(size: pool_size, args: [uri, certificate.ssl_context, keep_alive, proxy])
       client_with_connection(connection_pool, certificate: certificate)
     end
 
@@ -292,4 +293,3 @@ module Lowdown
     end
   end
 end
-

@@ -83,8 +83,8 @@ module Lowdown
     # @param  [Boolean] connect
     #         whether or not to immediately connect on initialization.
     #
-    def initialize(uri, ssl_context, connect = true)
-      @uri, @ssl_context = URI(uri), ssl_context
+    def initialize(uri, ssl_context, connect = true, proxy = nil)
+      @uri, @ssl_context, @proxy = URI(uri), ssl_context, proxy
       reset_state!
 
       if connect
@@ -165,7 +165,11 @@ module Lowdown
       # 2. This tries to `NilClass#send` the hostname:
       #    https://github.com/celluloid/celluloid-io/blob/85cee9da22ef5e94ba0abfd46454a2d56572aff4/lib/celluloid/io/dns_resolver.rb#L44
       begin
-        socket = TCPSocket.new(@uri.host, @uri.port)
+        socket = if @proxy && defined? Proxifier
+                   Proxifier::Proxy(@proxy).open(@uri.host, @uri.port)
+                 else
+                   TCPSocket.new(@uri.host, @uri.port)
+                 end
       rescue NoMethodError
         raise SocketError, "(Probably) getaddrinfo: nodename nor servname provided, or not known"
       end
@@ -376,4 +380,3 @@ module Lowdown
     end
   end
 end
-
