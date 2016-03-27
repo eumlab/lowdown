@@ -69,7 +69,7 @@ module Lowdown
              pool_size: pool_size,
              keep_alive: keep_alive,
              connection_class: connection_class,
-             proxy: nil)
+             proxy: proxy)
     end
 
     # Creates a connection pool that connects to the specified `uri`.
