@@ -168,7 +168,7 @@ module Lowdown
         socket = if @proxy && defined? Proxifier
                    Proxifier::Proxy(@proxy).open(@uri.host, @uri.port)
                  else
-                   TCPSocket.new(@uri.host, @uri.port)
+                   Celluloid::IO::TCPSocket.new(@uri.host, @uri.port)
                  end
       rescue NoMethodError
         raise SocketError, "(Probably) getaddrinfo: nodename nor servname provided, or not known"
